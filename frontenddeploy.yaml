@@ -1,0 +1,47 @@
+# For replicaset all the meta data field of the pod will move inside spec
+apiVersion: apps/v1 #for replicaset make sure its apps/v1
+kind: ReplicaSet   #Replicaset kind
+metadata:
+  name: webapp-frontend       #Name of the ReplicaSet
+spec:
+  selector:           #it will manage all the pods where label matches key value pair app:webapp
+    matchLabels:
+      app: webapp-frontend
+  replicas: 2         #Number of replicas of the pod
+  template:           #Template for the pod to be created by the ReplicaSet
+    metadata:         #Metadata for the pod template
+      labels:         #Labels for the pod template
+        app: webapp-frontend   #Key-value pair for the label of the pod template
+
+    spec:             #Specification for the pod template
+      containers:     #Containers to be created in the pod
+        - name: webapp-frontend          #Name of the container
+          image: shubhamdixit863/goreactfrontend2  #Docker image for the container
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-frontend-service
+spec:
+  #This defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either or other services
+  # or maybe external users to connect to eg browser
+  selector:
+    app: webapp-frontend   # the pod label we want to create service for
+
+
+  ports:
+    - name: http #just a label
+      port: 80   #internal port of the cluster in which pod is running
+      targetPort: 9090   # only be user when type is NodePort should be greater than 30000
+
+  type: LoadBalancer
+
+
+
+

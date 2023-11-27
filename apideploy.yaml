@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: webapp-api
+spec:
+  selector:
+    matchLabels:
+      app: webapp-api
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: webapp-api
+    spec:
+      containers:
+        - name: webapp-api
+          image: shubhamdixit863/goapibackendwithrds
+          env:
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: api-db-config
+                  key: HOST
+            - name: DB
+              valueFrom:
+                configMapKeyRef:
+                  name: api-db-config
+                  key: DB
+            - name: USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: api-db-config
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: api-db-config
+                  key: PASSWORD
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-api-service
+spec:
+  #This defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either or other services
+  # or maybe external users to connect to eg browser
+  selector:
+    app: webapp-api   # the pod label we want to create service for
+
+
+  ports:
+    - name: http #just a label
+      port: 80   #internal port of the cluster in which pod is running
+      targetPort: 8080   # only be user when type is NodePort should be greater than 30000
+
+  type: LoadBalancer
+
+
+---
+
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: api-db-config
+  data:
+    HOST: "goapirds35e46a3.cr7g9pr3mfgk.us-east-2.rds.amazonaws.com"
+    USERNAME: "myusername"
+    PASSWORD: "mypassword"
+    DB: "postgres"
+

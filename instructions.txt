@@ -1,0 +1,16 @@
+1- Make sure you have aws account and aws cli installed on your system
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+2- You should have a dockerhub account and docker installed on your system ,run docker login on your system to login on docker hub
+
+3- Install pulumi cli  -https://www.pulumi.com/docs/cli/
+
+4- run make pulumi ,select main stack
+
+5-run configureaws ,by changing the eks name ,also change the rds name and bucket name in yaml files
+
+6- Run  make deployapi
+
+7- Run make deploys3
+
+8- Get the load balancer urls ,by running kubectl get svc
